@@ -1,29 +1,32 @@
-import { useDispatch, useSelector } from "react-redux"
-import { deleteTasks } from "../features/tasks/taskSlice"
+import { useDispatch, useSelector } from "react-redux";
+import { deleteTasks } from "../features/tasks/taskSlice";
+import { Task } from "./Task";
+import { useNavigate } from "react-router";
 
 export const TaskList = () => {
+  const tasks = useSelector((state) => state.tasks);
 
-  const tasks = useSelector((state )=> state.tasks)
-
-  const dispatch = useDispatch()
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleDelete = (id) => {
-    dispatch(deleteTasks(id))
-  }
+    dispatch(deleteTasks(id));
+  };
 
-  return(
+  const handleNavigate = () => {
+    navigate("/form");
+  };
+
+  return (
     <>
-      {
-
-      tasks.map(task => {
-        return (
-            <section key={task.id}>
-              <p>{task.title}</p>
-              <button onClick={()=> handleDelete(task.id)}>Delete</button>
-            </section>
-        )
-      })
-      }
+      <button onClick={handleNavigate}>Add new Task</button>
+      {tasks.map((task) => (
+        <Task
+          key={task.id}
+          id={task.id}
+          title={task.title}
+          onDelete={handleDelete}
+        />
+      ))}
     </>
-  )
-}
+  );
+};

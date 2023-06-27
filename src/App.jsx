@@ -1,17 +1,16 @@
 import "./App.css";
-import { useSelector } from "react-redux";
 import { TaskList } from "./components/TaskList";
 import { FormTask } from "./components/FormTask";
+import { Route, Routes } from "react-router";
 
 function App() {
-  const Tasks = useSelector((state) => state.tasks);
-  console.log(Tasks);
-
   return (
     <>
-      <h1>HOME</h1>
-      <FormTask/>
-      <TaskList/>
+      <Routes>
+        <Route path="/" element={<TaskList />} />
+        <Route path="/form" element={<FormTask />} />
+        <Route path="/form/:id" element={<FormTask />} />
+      </Routes>
     </>
   );
 }

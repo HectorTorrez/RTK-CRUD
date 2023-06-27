@@ -1,37 +1,58 @@
-import { useState } from "react"
-import { useDispatch } from "react-redux"
-import { addTasks } from "../features/tasks/taskSlice"
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addTasks, editTasks } from "../features/tasks/taskSlice";
+import { useNavigate, useParams } from "react-router";
 
 export const FormTask = () => {
+  const [title, setTitle] = useState("");
 
-  const [task, setTask] = useState('')
-
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const params = useParams();
+  const newtask = useSelector((state) => state.tasks);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    
-    setTask(e.target.value)
-  }
+    setTitle(e.target.value);
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    dispatch(addTasks(
-      {
-        title: task,
-        id: crypto.randomUUID(),
-        done: false
-      }
-    ))
-    setTask('')
-  }
+    e.preventDefault();
 
-  
-  return(
-    <form onSubmit={handleSubmit} >
+    if (params.id) {
+      dispatch(editTasks({ title, id: params.id }));
+    } else {
+      dispatch(
+        addTasks({
+          title,
+          id: crypto.randomUUID(),
+          done: false,
+        })
+      );
+    }
+
+    navigate("/");
+    setTitle("");
+  };
+
+  useEffect(() => {
+    if (params.id) {
+      const { title } = newtask.find((task) => task.id === params.id);
+      setTitle(title);
+    }
+  }, [params, newtask]);
+
+  return (
+    <form onSubmit={handleSubmit}>
       <label htmlFor="title">
-        <input onChange={handleChange} type="text" name="title" value={task} placeholder="Add task" />
+        <input
+          onChange={handleChange}
+          type="text"
+          name="title"
+          value={title}
+          placeholder="Add task"
+        />
       </label>
       <button type="submit">Add task</button>
     </form>
-  )
-}
+  );
+};
