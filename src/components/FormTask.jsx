@@ -1,15 +1,11 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { addTasks, editTasks } from "../features/tasks/taskSlice";
-import { useNavigate, useParams } from "react-router";
-
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addTasks } from "../features/tasks/taskSlice";
+import { CiStickyNote } from "react-icons/ci";
 export const FormTask = () => {
   const [title, setTitle] = useState("");
 
   const dispatch = useDispatch();
-  const params = useParams();
-  const newtask = useSelector((state) => state.tasks);
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setTitle(e.target.value);
@@ -17,42 +13,33 @@ export const FormTask = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (title === "") return;
+    dispatch(
+      addTasks({
+        title,
+        id: crypto.randomUUID(),
+        done: false,
+      })
+    );
 
-    if (params.id) {
-      dispatch(editTasks({ title, id: params.id }));
-    } else {
-      dispatch(
-        addTasks({
-          title,
-          id: crypto.randomUUID(),
-          done: false,
-        })
-      );
-    }
-
-    navigate("/");
     setTitle("");
   };
 
-  useEffect(() => {
-    if (params.id) {
-      const { title } = newtask.find((task) => task.id === params.id);
-      setTitle(title);
-    }
-  }, [params, newtask]);
-
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="title">
-        <input
-          onChange={handleChange}
-          type="text"
-          name="title"
-          value={title}
-          placeholder="Add task"
-        />
-      </label>
-      <button type="submit">Add task</button>
+    <form className="my-10 flex gap-3 text-xl" onSubmit={handleSubmit}>
+      <input
+        className=" outline-none border-b border-b-gray-200 hover:py-2 w-36"
+        onChange={handleChange}
+        maxLength={25}
+        type="text"
+        name="title"
+        value={title}
+        placeholder="Tasks..."
+      />
+
+      <button className="bg-blue-300 rounded-lg px-3 shadow-lg" type="submit">
+        <CiStickyNote />
+      </button>
     </form>
   );
 };
